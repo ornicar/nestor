@@ -11,16 +11,19 @@ object ApplicationBuild extends Build {
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
     resolvers ++= Seq(
-      "Eligosource Releases" at "http://repo.eligotech.com/nexus/content/repositories/eligosource-releases"
+      "Eligosource Releases" at "http://repo.eligotech.com/nexus/content/repositories/eligosource-releases",
+      "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases/"
     ),
     libraryDependencies ++= Seq(
-      "org.eligosource" %% "eventsourced" % "0.5-M1"
+      "org.eligosource" %% "eventsourced" % "0.5-M1",
+      "org.scalaz" %% "scalaz-core" % "7.0.0-M7" //% "compile"
     ),
     scalacOptions := Seq(
       "-deprecation",
       "-unchecked",
       "-feature",
-      "-language:postfixOps"
+      "-language:postfixOps",
+      "-language:reflectiveCalls"
     )
   )
 

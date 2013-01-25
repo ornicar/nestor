@@ -2,7 +2,7 @@ package nestor
 package domain
 
 case class Person(
-    id: String,
+    id: Int,
     firstName: String,
     lastName: String) {
 
@@ -12,6 +12,8 @@ object Person {
 
   object Command {
 
-    case class Create(personId: String)
+    case class Create(firstName: String, lastName: String) {
+      def apply(id: Int) = Person(id, firstName, lastName)
+    }
   }
 }

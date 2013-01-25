@@ -1,0 +1,18 @@
+@(form: Form[_])
+
+@import helper.twitterBootstrap._
+
+@layout("Create a person") {
+
+@helper.form(action = routes.Person.create) {
+
+@helper.inputText(
+form("firstName"),
+'_label -> "First Name",
+'_help -> "Please choose a valid first name.")
+
+@helper.inputText(form("lastName"))
+
+<input type="submit" value="Save" class="btn">
+}
+}

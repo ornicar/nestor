@@ -15,38 +15,36 @@ import scalaz._, std.AllInstances._
 import domain._
 import Person.Command
 
-final class PersonApi(
-    personColl: Coll[Person],
-    personProcessor: ActorRef)(implicit system: ActorSystem) {
+final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: ActorSystem) {
 
   //
   // Consistent reads
   //
 
-  def all = personColl.all
+  def all = coll.all
 
-  val byId = personColl.byId _
+  val byId = coll.byId _
 
   //
   // Updates
   //
 
-  def create(firstName: String, lastName: String): Future[Valid[Person]] = {
-    personProcessor ? Message(Command.Create(firstName, lastName))
-  }.mapTo[Valid[Person]]
+  private implicit val timeout = Timeout(5 seconds)
 
-  implicit val timeout = Timeout(5 seconds)
+  def create(command: Command.Create): Future[Valid[Person]] = {
+    processor ? Message(command)
+  }.mapTo[Valid[Person]]
 }
 
 // -------------------------------------------------------------------------------------------------------------
-//  PersonProcessor is single writer to personColl, so we can have reads and writes in separate transactions
+//  PersonProcessor is single writer to coll, so we can have reads and writes in separate transactions
 // -------------------------------------------------------------------------------------------------------------
 
-class PersonProcessor(personColl: Coll[Person]) extends Actor { this: Emitter ⇒
+class PersonProcessor(coll: Coll[Person]) extends Actor { this: Emitter ⇒
 
   def receive = {
 
-    case create: Command.Create ⇒ sender ! Success(personColl += create.apply)
+    case create: Command.Create ⇒ sender ! Success(coll += create.apply)
 
   }
 }

@@ -11,39 +11,33 @@ import org.eligosource.eventsourced.core._
 import org.eligosource.eventsourced.journal.JournalioJournalProps
 import play.api.Logger
 
-trait Env {
+final class Env {
 
-  def logger: Logger
+  private val logger = Logger("nestor")
 
-  def personProcessor: ActorRef
-}
+  private implicit val system = ActorSystem("eventsourced")
+  private implicit val timeout = Timeout(5 seconds)
 
-object Env {
+  private lazy val journal = Journal(JournalioJournalProps(new File("target/journal")))
+  private lazy val extension = EventsourcingExtension(system, journal)
 
-  private val personProcessorId = 1
+  object person {
 
-  def boot(): Env = new Env {
+    private val coll = Coll.empty[Person]
 
-    implicit val system = ActorSystem("eventsourced")
-    implicit val timeout = Timeout(5 seconds)
-
-    val logger = Logger("nestor")
-
-    val journal = Journal(JournalioJournalProps(new File("target/journal")))
-    val extension = EventsourcingExtension(system, journal)
-
-    val personsColl = Coll.empty[Person]
-
-    val personProcessor: ActorRef = extension.processorOf(Props(
-      new PersonProcessor(personsColl) with Emitter with Eventsourced {
-        val id = personProcessorId
-      }
+    val processor: ActorRef = extension.processorOf(Props(
+      new PersonProcessor(coll) with Emitter with Eventsourced { val id = 1 }
     ))
 
-    logger.info("Start recovery of event sourced messages")
-    extension.recover()
-    logger.info("Await processing of event sourced messages")
-    extension.awaitProcessing()
-    logger.info("Recovery of event sourced messages complete")
+    val api = new PersonApi(coll, processor)
   }
+
+  // force loading before the event recovery
+  person.processor
+
+  logger.info("Start recovery of event sourced messages")
+  extension.recover()
+  logger.info("Await processing of event sourced messages")
+  extension.awaitProcessing()
+  logger.info("Recovery of event sourced messages complete")
 }

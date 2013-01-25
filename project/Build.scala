@@ -23,7 +23,8 @@ object ApplicationBuild extends Build {
       "-unchecked",
       "-feature",
       "-language:postfixOps",
-      "-language:reflectiveCalls"
+      "-language:reflectiveCalls",
+      "-language:implicitConversions"
     )
   )
 

@@ -4,18 +4,24 @@ import play.Project._
 
 object ApplicationBuild extends Build {
 
-  val appName         = "nestor"
-  val appVersion      = "1.0-SNAPSHOT"
+  val appName = "nestor"
+  val appVersion = "1.0-SNAPSHOT"
 
-  val appDependencies = Seq(
-    // Add your project dependencies here,
-    jdbc,
-    anorm
-  )
-
+  val appDependencies = Seq()
 
   val main = play.Project(appName, appVersion, appDependencies).settings(
-    // Add your own project settings here      
+    resolvers ++= Seq(
+      "Eligosource Releases" at "http://repo.eligotech.com/nexus/content/repositories/eligosource-releases"
+    ),
+    libraryDependencies ++= Seq(
+      "org.eligosource" %% "eventsourced" % "0.5-M1"
+    ),
+    scalacOptions := Seq(
+      "-deprecation",
+      "-unchecked",
+      "-feature",
+      "-language:postfixOps"
+    )
   )
 
 }

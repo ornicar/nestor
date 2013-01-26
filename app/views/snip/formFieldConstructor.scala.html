@@ -1,0 +1,24 @@
+@(elements: views.html.helper.FieldElements)
+
+@import play.api.i18n._
+@import views.html.helper._
+
+@**************************************************
+* Generate better input according twitter bootsrap rules *
+**************************************************@
+
+<div class="control-group @elements.args.get('_class) @if(elements.hasErrors) {error}" id="@elements.args.get('_id).getOrElse(elements.id + "_field")">
+  <label class="control-label" for="@elements.id">@elements.label(elements.lang)</label>
+  <div class="controls">
+    @elements.input
+    <span class="help-inline">
+      @if(elements.errors(elements.lang).nonEmpty) {
+      @elements.errors(elements.lang).mkString(", ")
+      } else {
+      @if(!elements.args.get('_noinfo)) {
+      @elements.infos(elements.lang).mkString(", ")
+      }
+      }
+    </span>
+  </div>
+</div>

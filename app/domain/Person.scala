@@ -7,16 +7,35 @@ case class Person(
     id: Int,
     firstName: String,
     lastName: String,
-    country: Country) {
+    country: Country,
+    document: String,
+    email: Option[String] = None,
+    phone: Option[String] = None,
+    notes: Option[String] = None) {
 }
 
 object Person {
 
   object Command {
 
-    case class Create(firstName: String, lastName: String, countryCode: String) {
+    case class Create(
+        firstName: String,
+        lastName: String,
+        countryCode: String,
+        document: String,
+        email: Option[String] = None,
+        phone: Option[String] = None,
+        notes: Option[String] = None) {
       def apply: Valid[Int ⇒ Person] = Country(countryCode) map { country ⇒
-        (id: Int) ⇒ Person(id, firstName, lastName, country)
+        (id: Int) ⇒ Person(
+          id = id,
+          firstName = firstName,
+          lastName = lastName,
+          country = country,
+          document = document,
+          email = email,
+          phone = phone,
+          notes = notes)
       } toSuccess { Error("Invalid country code: " + countryCode) }
     }
   }
@@ -30,7 +49,11 @@ object Person {
     lazy val create = F(mapping(
       "firstName" -> nonEmptyText,
       "lastName" -> nonEmptyText,
-      "countryCode" -> nonEmptyText.verifying(Country.all contains _)
+      "countryCode" -> nonEmptyText.verifying(Country.all contains _),
+      "document" -> nonEmptyText,
+      "email" -> optional(email),
+      "phone" -> optional(nonEmptyText),
+      "notes" -> optional(nonEmptyText)
     )(Create.apply)(Create.unapply))
   }
 }

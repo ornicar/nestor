@@ -23,7 +23,7 @@ object Person extends Controller {
   def create = Action { implicit request ⇒
     Async {
       domain.Person.Form.create.bindFromRequest.fold(
-        errors ⇒ Future successful BadRequest(views.html.person.create(errors.pp)),
+        errors ⇒ Future successful BadRequest(views.html.person.create(errors)),
         command ⇒ api create command map {
           _ fold (
             errors ⇒ BadRequest(errors.toString),

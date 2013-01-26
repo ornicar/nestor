@@ -1,0 +1,47 @@
+@(form: Form[_], action: Call)
+
+@import nestor.helper.FormHelper._
+
+@helper.form(action = action, 'class -> "form-horizontal") {
+
+<fieldset>
+
+  @helper.inputText(form("firstName"),
+  '_label -> "First Name")
+
+  @helper.inputText(form("lastName"),
+  '_label -> "Last Name")
+
+  @helper.select(form("countryCode"),
+  options = helper.options(Country.tuples),
+  '_label -> "Country",
+  '_default -> "",
+  '_error -> form("countryCode").error.map(_.withMessage("Please select the country"))
+  )
+
+  @helper.inputText(form("document"),
+  '_label -> "Document Number")
+
+</fieldset>
+
+<fieldset>
+
+  <legend>Optional fields</legend>
+
+  @helper.inputText(form("email"),
+  '_label -> "Email Address",
+  '_noinfo -> true,
+  'type -> "email")
+
+  @helper.inputText(form("phone"),
+  '_label -> "Phone number",
+  '_noinfo -> true)
+
+  @helper.textarea(form("notes"),
+  '_label -> "Notes",
+  '_noinfo -> true)
+
+</fieldset>
+
+@snip.submit(routes.Person.index)
+}

@@ -16,6 +16,7 @@ object ApplicationBuild extends Build {
     ),
     libraryDependencies ++= Seq(
       "org.eligosource" %% "eventsourced" % "0.5-M1",
+      "joda-time" % "joda-time" % "2.1",
       "org.scalaz" %% "scalaz-core" % "7.0.0-M7" //% "compile"
     ),
     templatesImport ++= Seq(

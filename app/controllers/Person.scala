@@ -13,7 +13,7 @@ object Person extends Controller {
   private def api = Global.env.person.api
 
   def index = Action {
-    Ok(api.all mkString "\n")
+    Ok(views.html.person.index(api.all))
   }
 
   def createForm = Action {
@@ -24,14 +24,35 @@ object Person extends Controller {
     Async {
       api.createForm.bindFromRequest.fold(
         errors ⇒ Future successful BadRequest(views.html.person.create(errors)),
-        command ⇒ api create command map {
+        data ⇒ api create data map {
           _ fold (
-            errors ⇒ BadRequest(errors.toString),
-            person ⇒ Ok(person.toString)
+            errors ⇒ BadRequest(errors.toString): Result,
+            _ ⇒ Redirect(routes.Person.index)
           )
         }
       )
     }
   }
 
+  def updateForm(id: Int) = Action {
+    (api byId id) map { person ⇒
+      Ok(views.html.person.update(person, api updateForm person))
+    } getOrElse NotFound("No such person")
+  }
+
+  def update(id: Int) = Action { implicit request ⇒
+    (api byId id) map { person ⇒
+      Async {
+        api.updateForm(person).bindFromRequest.fold(
+          errors ⇒ Future successful BadRequest(views.html.person.update(person, errors)),
+          data ⇒ api.update(person, data) map {
+            _ fold (
+              errors ⇒ BadRequest(errors.toString): Result,
+              _ ⇒ Redirect(routes.Person.index)
+            )
+          }
+        )
+      }
+    } getOrElse NotFound("No such person")
+  }
 }

@@ -17,25 +17,29 @@ import Person.Command
 
 final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: ActorSystem) {
 
-  lazy val createForm = Person.Form create { doc ⇒ byDocument(doc).isEmpty }
+  def createForm = Person.Form create { doc ⇒ byDocument(doc).isEmpty }
 
-  //
+  def updateForm(person: Person) = Person.Form.update(person, doc ⇒
+    byDocument(doc).fold(true)(_.id != person.id)
+  )
+
   // Consistent reads
-  //
 
   def all = coll.all
 
   val byId = coll.byId _
 
-  def byDocument(document: String) = coll find (_.document == document)
+  private def byDocument(document: String) = coll find (_.document == document)
 
-  //
   // Updates
-  //
 
   private implicit val timeout = Timeout(5 seconds)
 
-  def create(command: Command.Create) = (processor ? Message(command)).mapTo[Valid[Person]]
+  def create(data: Person.Data) =
+    (processor ? Message(Command.Create(data))).mapTo[Valid[Person]]
+
+  def update(person: Person, data: Person.Data) =
+    (processor ? Message(Command.Update(person.id, data))).mapTo[Valid[Person]]
 }
 
 // -------------------------------------------------------------------------------------------------------------
@@ -46,7 +50,9 @@ class PersonProcessor(coll: Coll[Person]) extends Actor { this: Emitter ⇒
 
   def receive = {
 
-    case create: Command.Create ⇒ sender ! (create.apply map (coll.+=))
+    case Command.Create(data)     ⇒ sender ! (data.apply map (coll.insert))
+
+    case Command.Update(id, data) ⇒ sender ! (data.apply map (f ⇒ coll.update(f(id))))
 
   }
 }

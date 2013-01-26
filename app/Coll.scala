@@ -4,21 +4,24 @@ import scala.concurrent.stm.Ref
 
 case class Coll[A <: Coll.Record](ref: Ref[Map[Int, A]]) {
 
-  def all: Map[Int, A] = ref.single.get
+  def map: Map[Int, A] = ref.single.get
 
-  def byId(id: Int): Option[A] = all get id
+  def all: Iterable[A] = map.values
 
-  def values: Iterable[A] = all.values
+  def byId(id: Int): Option[A] = map get id
 
-  def +=(builder: Int ⇒ A): A = {
-    val record = builder(nextId)
+  def insert(builder: Int ⇒ A): A = {
+    update(builder(nextId))
+  }
+
+  def update(record: A): A = {
     ref.single.transform(_ + (record.id -> record))
     record
   }
 
-  def find(selector: A ⇒ Boolean): Option[A] = values find selector
+  def find(selector: A ⇒ Boolean): Option[A] = all find selector
 
-  private def nextId: Int = all.size + 1
+  private def nextId: Int = map.size + 1
 }
 
 object Coll {

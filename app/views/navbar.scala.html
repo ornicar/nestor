@@ -1,0 +1,18 @@
+@(active: String)
+
+@import nestor.helper.CommonHelper.richString
+
+<div class="navbar navbar-static-top">
+  <div class="navbar-inner">
+    <a class="brand" href="@routes.Main.index">Nestor</a>
+    <ul class="nav">
+      <li class="@active.active("person")">
+        <a href="@routes.Person.index">Hickers</a>
+      </li>
+      <li class="@active.active("bluk")">
+        <a href="@routes.Person.index">Bluk</a>
+      </li>
+    </ul>
+  </div>
+</div>
+

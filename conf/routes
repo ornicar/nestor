@@ -9,6 +9,8 @@ GET     /                           controllers.Main.index
 GET     /person                     controllers.Person.index
 GET     /person/create              controllers.Person.createForm
 POST    /person                     controllers.Person.create
+GET     /person/:id                 controllers.Person.updateForm(id: Int)
+POST    /person/:id                 controllers.Person.update(id: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

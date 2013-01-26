@@ -1,0 +1,31 @@
+@(persons: Iterable[Person])
+
+@import nestor.helper.CommonHelper._
+
+@layout(persons.size + " Hickers", active = "person") {
+
+<a href="@routes.Person.createForm" class="btn">Create a new hicker</a>
+
+<table class="table table-stripped">
+  <thead>
+    <tr>
+      <th>#</th>
+      <th>Name</th>
+      <th>Country</th>
+      <th>Date</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    @persons.map { p =>
+    <tr>
+      <td>@p.id</td>
+      <td>@p.fullName</td>
+      <td>@p.country.name</td>
+      <td>@showDate(p.createdAt)</td>
+      <td><a href="@routes.Person.updateForm(p.id)" class="btn">Update</a></td>
+    </tr>
+    }
+  </tbody>
+</table>
+}

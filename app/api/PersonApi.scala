@@ -11,9 +11,10 @@ import scala.concurrent.stm.Ref
 
 import org.eligosource.eventsourced.core._
 import scalaz._, std.AllInstances._
+import play.api.libs.json._
 
 import domain._
-import Person.Command
+import Person._
 
 final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: ActorSystem) {
 
@@ -36,10 +37,23 @@ final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: 
   private implicit val timeout = Timeout(5 seconds)
 
   def create(data: Person.Data) =
-    (processor ? Message(Command.Create(data))).mapTo[Valid[Person]]
+    (processor ? Message(PersonApi.Create(data))).mapTo[Valid[Person]]
 
   def update(person: Person, data: Person.Data) =
-    (processor ? Message(Command.Update(person.id, data))).mapTo[Valid[Person]]
+    (processor ? Message(PersonApi.Update(person.id, data))).mapTo[Valid[Person]]
+
+}
+
+private[api] object PersonApi {
+
+  case class Create(js: String) { def data = read(js) }
+  def Create(data: Data) = new Create(write(data))
+
+  case class Update(id: Int, js: String) { def data = read(js) }
+  def Update(id: Int, data: Data) = new Update(id, write(data))
+
+  private def write(data: Data): String = Json stringify (Json.writes[Data] writes data)
+  private def read(js: String): Valid[Data] = jsValid(Json.reads[Data] reads (Json parse js))
 }
 
 // -------------------------------------------------------------------------------------------------------------
@@ -50,9 +64,8 @@ class PersonProcessor(coll: Coll[Person]) extends Actor { this: Emitter ⇒
 
   def receive = {
 
-    case Command.Create(data)     ⇒ sender ! (data.apply map (coll.insert))
+    case create: PersonApi.Create ⇒ sender ! create.data.flatMap(_.apply map coll.insert)
 
-    case Command.Update(id, data) ⇒ sender ! (data.apply map (f ⇒ coll.update(f(id))))
-
+    case update: PersonApi.Update ⇒ sender ! update.data.flatMap(_.apply map (f ⇒ coll.update(f(update.id))))
   }
 }

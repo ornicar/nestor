@@ -16,12 +16,12 @@ import play.api.libs.json._
 import domain._
 import Person._
 
-final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: ActorSystem) {
+final class PersonApi(coll: CollReadOnly[Person], processor: ActorRef)(implicit system: ActorSystem) {
 
   def createForm = Person.Form create { doc ⇒ byDocument(doc).isEmpty }
 
   def updateForm(person: Person) = Person.Form.update(person, doc ⇒
-    byDocument(doc).fold(true)(_.id != person.id)
+    byDocument(doc).fold(true)(_.id == person.id)
   )
 
   // Consistent reads
@@ -46,10 +46,15 @@ final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: 
 
 private[api] object PersonApi {
 
-  case class Create(js: String) { def data = read(js) }
+  sealed trait WithJs {
+    def js: String
+    def data = read(js)
+  }
+
+  case class Create(js: String) extends WithJs
   def Create(data: Data) = new Create(write(data))
 
-  case class Update(id: Int, js: String) { def data = read(js) }
+  case class Update(id: Int, js: String) extends WithJs
   def Update(id: Int, data: Data) = new Update(id, write(data))
 
   private def write(data: Data): String = Json stringify (Json.writes[Data] writes data)

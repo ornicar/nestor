@@ -33,7 +33,7 @@ final class Env {
   }
 
   // force loading before the event recovery
-  person.processor
+  println(person.processor)
 
   logger.info("Start recovery of event sourced messages")
   extension.recover()

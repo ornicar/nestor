@@ -44,7 +44,7 @@ class PersonProcessor(coll: Coll[Person]) extends Actor { this: Emitter ⇒
 
   def receive = {
 
-    case create: Command.Create ⇒ sender ! Success(coll += create.apply)
+    case create: Command.Create ⇒ sender ! (create.apply map (coll.+=))
 
   }
 }

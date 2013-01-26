@@ -13,7 +13,7 @@ object Person extends Controller {
   private def api = Global.env.person.api
 
   def index = Action {
-    Ok(api.all.pp mkString "\n")
+    Ok(api.all mkString "\n")
   }
 
   def createForm = Action {
@@ -23,7 +23,7 @@ object Person extends Controller {
   def create = Action { implicit request ⇒
     Async {
       domain.Person.Form.create.bindFromRequest.fold(
-        errors ⇒ Future successful BadRequest(views.html.person.create(errors)),
+        errors ⇒ Future successful BadRequest(views.html.person.create(errors.pp)),
         command ⇒ api create command map {
           _ fold (
             errors ⇒ BadRequest(errors.toString),

@@ -30,7 +30,7 @@ object Person {
     lazy val create = F(mapping(
       "firstName" -> nonEmptyText,
       "lastName" -> nonEmptyText,
-      "country" -> nonEmptyText.verifying(Country.all contains _)
+      "countryCode" -> nonEmptyText.verifying(Country.all contains _)
     )(Create.apply)(Create.unapply))
   }
 }

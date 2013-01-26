@@ -10,9 +10,9 @@ case class Coll[A <: Coll.Record](ref: Ref[Map[Int, A]]) {
 
   def list: Iterable[A] = all.values
 
-  def +=(builder: Int => A): A = { 
+  def +=(builder: Int ⇒ A): A = {
     val record = builder(nextId)
-    ref.single.transform(_ + (record.id -> record)) 
+    ref.single.transform(_ + (record.id -> record))
     record
   }
 

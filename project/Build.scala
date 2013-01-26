@@ -18,6 +18,8 @@ object ApplicationBuild extends Build {
       "org.eligosource" %% "eventsourced" % "0.5-M1",
       "org.scalaz" %% "scalaz-core" % "7.0.0-M7" //% "compile"
     ),
+    templatesImport ++= Seq(
+      "nestor.domain._"),
     scalacOptions := Seq(
       "-deprecation",
       "-unchecked",

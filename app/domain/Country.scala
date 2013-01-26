@@ -10,7 +10,7 @@ object Country {
 
   def apply(code: String): Option[Country] = all get code.toUpperCase
 
-  def codes = all.keys
+  def tuples = all mapValues (_.name)
 
   lazy val all = Map(
     "AF" -> Country("AF", "Afghanistan"),

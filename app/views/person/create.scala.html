@@ -8,10 +8,19 @@
 
 @helper.inputText(
 form("firstName"),
-'_label -> "First Name",
-'_help -> "Please choose a valid first name.")
+'_label -> "First Name")
 
-@helper.inputText(form("lastName"))
+@helper.inputText(
+form("lastName"),
+'_label -> "Last Name")
+
+@helper.select(
+form("countryCode"),
+options = helper.options(Country.tuples),
+'_label -> "Country",
+'_default -> "",
+'_error -> form("country").error.map(_.withMessage("Please select the country"))
+)
 
 <input type="submit" value="Save" class="btn">
 }

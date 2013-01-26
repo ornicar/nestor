@@ -1,7 +1,5 @@
 @(persons: Iterable[Person])
 
-@import nestor.helper.CommonHelper._
-
 @layout(persons.size + " Hickers", active = "person") {
 
 <a href="@routes.Person.createForm" class="btn">Create a new hicker</a>

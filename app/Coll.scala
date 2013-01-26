@@ -8,13 +8,15 @@ case class Coll[A <: Coll.Record](ref: Ref[Map[Int, A]]) {
 
   def byId(id: Int): Option[A] = all get id
 
-  def list: Iterable[A] = all.values
+  def values: Iterable[A] = all.values
 
   def +=(builder: Int ⇒ A): A = {
     val record = builder(nextId)
     ref.single.transform(_ + (record.id -> record))
     record
   }
+
+  def find(selector: A ⇒ Boolean): Option[A] = values find selector
 
   private def nextId: Int = all.size + 1
 }

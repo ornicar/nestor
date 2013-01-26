@@ -17,6 +17,8 @@ import Person.Command
 
 final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: ActorSystem) {
 
+  lazy val createForm = Person.Form create { doc ⇒ byDocument(doc).isEmpty }
+
   //
   // Consistent reads
   //
@@ -25,15 +27,15 @@ final class PersonApi(coll: Coll[Person], processor: ActorRef)(implicit system: 
 
   val byId = coll.byId _
 
+  def byDocument(document: String) = coll find (_.document == document)
+
   //
   // Updates
   //
 
   private implicit val timeout = Timeout(5 seconds)
 
-  def create(command: Command.Create): Future[Valid[Person]] = {
-    processor ? Message(command)
-  }.mapTo[Valid[Person]]
+  def create(command: Command.Create) = (processor ? Message(command)).mapTo[Valid[Person]]
 }
 
 // -------------------------------------------------------------------------------------------------------------

@@ -46,11 +46,12 @@ object Person {
     import play.api.data.Forms._
     import Command._
 
-    lazy val create = F(mapping(
+    def create(documentUnique: String ⇒ Boolean) = F(mapping(
       "firstName" -> nonEmptyText,
       "lastName" -> nonEmptyText,
       "countryCode" -> nonEmptyText.verifying(Country.all contains _),
-      "document" -> nonEmptyText,
+      "document" -> nonEmptyText
+        .verifying("Already exists", documentUnique),
       "email" -> optional(email),
       "phone" -> optional(nonEmptyText),
       "notes" -> optional(nonEmptyText)

@@ -17,12 +17,12 @@ object Person extends Controller {
   }
 
   def createForm = Action {
-    Ok(views.html.person.create(domain.Person.Form.create))
+    Ok(views.html.person.create(api.createForm))
   }
 
   def create = Action { implicit request ⇒
     Async {
-      domain.Person.Form.create.bindFromRequest.fold(
+      api.createForm.bindFromRequest.fold(
         errors ⇒ Future successful BadRequest(views.html.person.create(errors)),
         command ⇒ api create command map {
           _ fold (

@@ -11,11 +11,14 @@ import org.eligosource.eventsourced.core._
 
 import domain.Room, Room._
 
-final class RoomApi(coll: CollReadOnly[Room], processor: ActorRef)(implicit system: ActorSystem) {
+final class RoomApi(
+  coll: CollReadOnly[Room], 
+  processor: ActorRef
+)(implicit system: ActorSystem) extends CrudApi[Room, Room.Data] {
 
   def createForm = Room.Form.create 
 
-  def updateForm = Room.Form.update _
+  def updateForm(room: Room) = Room.Form update room
 
   // Consistent reads
 

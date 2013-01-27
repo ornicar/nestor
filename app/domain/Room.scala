@@ -10,6 +10,10 @@ case class Room(
     nbBeds: Int,
     createdAt: DateTime) {
 
+  def nonEmptyName = name | "Room %d".format(id)
+
+  override def toString = nonEmptyName
+
   def data = Room.Data(
     name = name,
     nbBeds = nbBeds)
@@ -30,7 +34,7 @@ object Room {
     import play.api.data.Forms._
 
     val create = F(mapping(
-      "name" -> optional(nonEmptyText),
+      "name" -> optional(text),
       "nbBeds" -> number
     )(Data.apply)(Data.unapply))
 

@@ -1,0 +1,6 @@
+@(form: Form[_])
+
+@layout("New Room", active = "room") {
+
+@room.form(form, routes.Room.create)
+}

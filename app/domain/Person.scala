@@ -66,8 +66,8 @@ object Person {
       "document" -> nonEmptyText
         .verifying("Already exists", documentUnique),
       "email" -> optional(email),
-      "phone" -> optional(nonEmptyText),
-      "notes" -> optional(nonEmptyText)
+      "phone" -> optional(text),
+      "notes" -> optional(text)
     )(Data.apply)(Data.unapply))
 
     def update(person: Person, documentUnique: String ⇒ Boolean) =

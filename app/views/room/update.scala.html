@@ -1,0 +1,7 @@
+@(p: Room, form: Form[_])
+
+@layout("Room " + p.toString, active = "room") {
+
+@room.form(form, routes.Room.update(p.id))
+
+}

@@ -1,0 +1,17 @@
+@(form: Form[_], action: Call)
+
+@helper.form(action = action, 'class -> "form-horizontal") {
+
+<fieldset>
+
+  @helper.inputText(form("name"),
+  '_label -> "Room Name")
+
+  @helper.inputText(form("nbBeds"),
+  '_label -> "Number of beds",
+  '_noinfo -> true)
+
+</fieldset>
+
+@snip.submit(routes.Room.index)
+}

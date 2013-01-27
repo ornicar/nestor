@@ -13,11 +13,11 @@ GET     /person/:id                 controllers.Person.updateForm(id: Int)
 POST    /person/:id                 controllers.Person.update(id: Int)
 
 # Room
-# GET     /room                     controllers.Room.index
-# GET     /room/create              controllers.Room.createForm
-# POST    /room                     controllers.Room.create
-# GET     /room/:id                 controllers.Room.updateForm(id: Int)
-# POST    /room/:id                 controllers.Room.update(id: Int)
+GET     /room                     controllers.Room.index
+GET     /room/create              controllers.Room.createForm
+POST    /room                     controllers.Room.create
+GET     /room/:id                 controllers.Room.updateForm(id: Int)
+POST    /room/:id                 controllers.Room.update(id: Int)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

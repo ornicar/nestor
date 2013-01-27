@@ -32,8 +32,19 @@ final class Env {
     val api = new PersonApi(coll, processor)
   }
 
+  object room {
+
+    private val coll = Coll.empty[Room]
+
+    val processor: ActorRef = extension.processorOf(Props(
+      new RoomProcessor(coll) with Emitter with Eventsourced { val id = 1 }
+    ))
+
+    val api = new RoomApi(coll, processor)
+  }
+
   // force loading before the event recovery
-  println(person.processor)
+  Seq(person.processor, room.processor) foreach { _ ! None }
 
   logger.info("Start recovery of event sourced messages")
   extension.recover()

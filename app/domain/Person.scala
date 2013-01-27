@@ -1,7 +1,7 @@
 package nestor
 package domain
 
-import scalaz._, std.AllInstances._, std.option._, Scalaz._
+import scalaz._, Scalaz._
 import org.joda.time.DateTime
 
 case class Person(
@@ -16,6 +16,8 @@ case class Person(
     createdAt: DateTime) {
 
   def fullName = firstName + " " + lastName
+
+  override def toString = fullName
 
   def data = Person.Data(
     firstName = firstName,

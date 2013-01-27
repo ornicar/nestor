@@ -1,6 +1,6 @@
 @(p: Person, form: Form[_])
 
-@layout("Hicker " + p.fullName, active = "person") {
+@layout("Hicker " + p.toString, active = "person") {
 
 @person.form(form, routes.Person.update(p.id))
 

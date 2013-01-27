@@ -3,20 +3,18 @@ package api
 
 import akka.actor._
 import akka.pattern.ask
-import akka.dispatch._
 import akka.util.Timeout
 import scala.concurrent.duration._
 import scala.concurrent.Future
-import scala.concurrent.stm.Ref
 
 import org.eligosource.eventsourced.core._
-import scalaz._, std.AllInstances._
-import play.api.libs.json._
 
-import domain._
-import Person._
+import domain.Person, Person._
 
-final class PersonApi(coll: CollReadOnly[Person], processor: ActorRef)(implicit system: ActorSystem) {
+final class PersonApi(
+  coll: CollReadOnly[Person], 
+  processor: ActorRef
+  )(implicit system: ActorSystem) extends CrudApi[Person, Person.Data] {
 
   def createForm = Person.Form create { doc ⇒ byDocument(doc).isEmpty }
 
@@ -36,15 +34,17 @@ final class PersonApi(coll: CollReadOnly[Person], processor: ActorRef)(implicit 
 
   private implicit val timeout = Timeout(5 seconds)
 
-  def create(data: Person.Data) =
+  def create(data: Data): Future[Valid[Person]] =
     (processor ? Message(PersonApi.Create(data))).mapTo[Valid[Person]]
 
-  def update(person: Person, data: Person.Data) =
+  def update(person: Person, data: Data) =
     (processor ? Message(PersonApi.Update(person.id, data))).mapTo[Valid[Person]]
 
 }
 
 private[api] object PersonApi {
+
+  import play.api.libs.json._
 
   sealed trait WithJs {
     def js: String
